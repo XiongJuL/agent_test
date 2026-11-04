@@ -1,0 +1,33 @@
+def process_github_webhook(payload):
+    # 错误 1：变量名拼写错误 (NameError)
+    repo_name = payload["repository"]["name"]
+    print("正在处理仓库: " + repo_nmae) 
+    
+    # 错误 2：语法错误 (SyntaxError)
+    if payload["action"] = "opened":
+        print("有一个新的 PR 被创建了！")
+        
+    # 错误 3：类型错误 (TypeError)
+    commits = payload["commits_count"]
+    print("本次推送的提交数: " + commits)
+    
+    # 错误 4：键值错误/字典访问错误 (KeyError)
+    # 假设 payload 里实际并没有 "stars" 这个键
+    stars = payload["stars"] 
+    
+    # 错误 5：逻辑错误/除零错误 (ZeroDivisionError)
+    # 假设 contributors 为 0
+    average_stars = stars / payload["contributors"]
+    
+    return average_stars
+
+# --- 测试数据 ---
+test_payload = {
+    "action": "opened",
+    "repository": {"name": "agent_test"},
+    "commits_count": 3,
+    "contributors": 0
+}
+
+# 运行函数
+process_github_webhook(test_payload)
