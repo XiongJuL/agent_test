@@ -1,7 +1,7 @@
 welcome_msg = f"欢迎用户： {user_id}"  # 请确保 user_id 已定义，例如从参数传入
 welcome_msg = f"欢迎用户： {user_id}"
 
-if db_connection is not None:
+    db_connection.commit()
     if db_connection is not None:
         db_connection.commit()
     else:
