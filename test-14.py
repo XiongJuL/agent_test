@@ -2,7 +2,7 @@
 welcome_msg = f"欢迎用户： {str(user_id)!r}"
 
 # 文件: test-14.py:32
-如果 db_connection  不是 None：
+if db_connection is not None:
     db_connection。提交()
 其他：
     raise RuntimeError（“数据库连接不可用，无法提交事务”)
