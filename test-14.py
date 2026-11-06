@@ -1,55 +1,44 @@
-import asyncio
+# 问题 1 (test-14.py:32)
+# 描述: 空对象属性错误：db_connection 为 None，调用 .commit() 会抛出 AttributeError。应检查连接是否有效。
+```python
+    if db_connection is not None:
+        db_connection.commit()
+    else:
+        print("数据库连接不可用")
+```
 
-async def process_webhook_event(payload):
-    print("收到 Webhook 事件，开始处理...")
+# 问题 2 (test-14.py:27)
+# 描述: 除零错误：当 items 为空列表时 len(items) 为 0，会抛出 ZeroDivisionError。需先判断列表是否为空。
+```python
+    if items:
+        average = total / len(items)
+        print(f"平均值: {average}")
+    else:
+        print("items 为空，无法计算平均值")
+```
 
-    # 错误 1：键名拼写错误 (KeyError)
-    # 假设 payload 里其实叫 "event_type"，你写成了 "event"
-    event_name = payload["event"] 
-    print(f"事件类型: {event_name}")
+# 问题 3 (test-14.py:21)
+# 描述: 变量名拼写错误：paylaod 未定义，会抛出 NameError。
+```python
+    if payload.get("is_critical"):
+```
 
-    # 错误 2：类型拼接错误 (TypeError)
-    # user_id 通常是整数 (int)，不能直接跟字符串用 + 拼接
-    user_id = payload["user_id"]
-    welcome_msg = "欢迎用户: " + user_id 
-    print(welcome_msg)
+# 问题 4 (test-14.py:17)
+# 描述: 异步调用缺少 await：save_to_db 是 async 函数，未 await 会导致协程未执行并产生 RuntimeWarning，数据实际未保存。
+```python
+    await save_to_db(payload)
+```
 
-    # 错误 3：异步调用错误 (TypeError)
-    # 假设 save_to_db 是一个异步函数 (async def)，但这里忘了加 await
-    save_to_db(payload) 
+# 问题 5 (test-14.py:13)
+# 描述: 类型拼接错误：user_id 是 int，不能直接与字符串用 + 拼接，会抛出 TypeError。应使用 f-string 或 str() 转换。
+```python
+    welcome_msg = f"欢迎用户: {user_id}"
+```
 
-    # 错误 4：变量名未定义 (NameError)
-    # 把 payload 拼写错了
-    if paylaod.get("is_critical"):
-        print("⚠️ 这是一个严重警报！")
-
-    # 错误 5：除零错误 (ZeroDivisionError)
-    # 如果 items 是空列表，len(items) 就是 0
-    items = payload.get("items", [])
-    total = sum(items)
-    average = total / len(items) 
-    print(f"平均值: {average}")
-
-    # 错误 6：空对象属性错误 (AttributeError)
-    # 假设数据库连接没建好，是个 None
-    db_connection = None 
-    db_connection.commit() # 对 None 调用 .commit() 会崩溃
-
-    return True
+# 问题 6 (test-14.py:8)
+# 描述: 键名拼写错误：payload 中实际键为 'event_type'，但代码使用 payload["event"]，会抛出 KeyError。
+```python
+    event_name = payload["event_type"]
+```
 
 
-async def save_to_db(data):
-    await asyncio.sleep(0.1)
-    print("数据已保存到数据库")
-
-
-# --- 测试数据 ---
-test_payload = {
-    "event_type": "push",
-    "user_id": 10086,
-    "items": [],
-    "is_critical": False
-}
-
-# 运行异步主函数
-asyncio.run(process_webhook_event(test_payload))
