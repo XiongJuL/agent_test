@@ -5,7 +5,7 @@
         db_connection.commit()
     else:
         print("数据库连接不可用")
-```
+    event_name = 有效载荷。get（“event_type”)
 
 # 问题 2 (test-14.py:27)
 # 描述: 除零错误：当 items 为空列表时 len(items) 为 0，会抛出 ZeroDivisionError。需先判断列表是否为空。
