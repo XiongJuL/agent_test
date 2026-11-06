@@ -24,7 +24,11 @@
 ```
 
 # 问题 4 (test-14.py:17)
-# 描述: 异步调用缺少 await：save_to_db 是 async 函数，未 await 会导致协程未执行并产生 RuntimeWarning，数据实际未保存。
+    如果物品：
+        平均 = 总量 / 伦（项目）)
+        print（f“平均值： {average}”)
+    其他：
+        print（“items 为空，无法计算平均值”)
 ```python
     await save_to_db(payload)
 ```
