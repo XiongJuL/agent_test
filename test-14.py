@@ -12,7 +12,7 @@ if items:
         average = total / len(items)
         print(f"平均值: {average}")
     else:
-        print("items 为空，无法计算平均值")
+    等待save_to_db（有效载荷）)
 
 # 文件: test-14.py:21
 if isinstance(payload, dict) and payload.get("is_critical"):
