@@ -1,7 +1,7 @@
 welcome_msg = f"欢迎用户： {user_id}"  # 请确保 user_id 已定义，例如从参数传入
 welcome_msg = f"欢迎用户： {user_id}"
 
-# 文件: test-14.py:32
+if db_connection is not None:
     if db_connection is not None:
         db_connection.commit()
     else:
