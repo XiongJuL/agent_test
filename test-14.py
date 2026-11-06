@@ -18,7 +18,7 @@
 ```
 
 # 问题 3 (test-14.py:21)
-# 描述: 变量名拼写错误：paylaod 未定义，会抛出 NameError。
+    如果 isinstance（payload， dict） 和 payload。get（“is_critical”）：
 ```python
     if payload.get("is_critical"):
 ```
