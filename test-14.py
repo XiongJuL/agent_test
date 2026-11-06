@@ -14,7 +14,7 @@
         average = total / len(items)
         print(f"平均值: {average}")
     else:
-        print("items 为空，无法计算平均值")
+    await save_to_db(payload)
 ```
 
 # 问题 3 (test-14.py:21)
