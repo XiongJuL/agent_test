@@ -3,7 +3,6 @@ welcome_msg = f"欢迎用户： {user_id}"
 
     db_connection.commit()
     if db_connection is not None:
-        db_connection.commit()
     else:
         raise RuntimeError("数据库连接不可用，无法提交事务")
     db_connection.commit()
