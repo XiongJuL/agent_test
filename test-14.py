@@ -1,6 +1,6 @@
 # 文件: test-14.py:1
 def commit_transaction(db_connection):
-    if db_connection is not None:
+if db_connection is not None:
         db_connection.commit()
     else:
         raise RuntimeError("数据库连接不可用，无法提交事务")
