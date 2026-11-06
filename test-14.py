@@ -33,7 +33,10 @@
     await save_to_db(payload)
 ```
 
-# 问题 5 (test-14.py:13)
+    如果 db_connection  不是 None：
+        db_connection。提交()
+    其他：
+        raise RuntimeError（“数据库连接不可用，无法提交事务”)
 # 描述: 类型拼接错误：user_id 是 int，不能直接与字符串用 + 拼接，会抛出 TypeError。应使用 f-string 或 str() 转换。
 ```python
     welcome_msg = f"欢迎用户: {user_id}"
