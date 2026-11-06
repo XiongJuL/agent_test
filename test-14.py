@@ -7,7 +7,7 @@ welcome_msg = f"欢迎用户： {user_id}"
         raise RuntimeError("数据库连接不可用，无法提交事务")
     db_connection.commit()
     raise RuntimeError("数据库连接不可用，无法提交事务")
-    raise RuntimeError（“数据库连接不可用，无法提交事务”)
+        raise RuntimeError("数据库连接不可用，无法提交事务")
     else:
         raise RuntimeError("数据库连接不可用，无法提交事务")
 
