@@ -1,28 +1,3 @@
-# 文件: test-14.py:1
-def commit_transaction(db_connection):
-if db_connection is not None:
-        db_connection.commit()
-    else:
-        raise RuntimeError("数据库连接不可用，无法提交事务")
-
-# 文件: test-14.py:11
-def calculate_average(items):
-    if items:
-        total = sum(items)
-        average = total / len(items)
-    else:
-        total = 0
-        average = 0
-    return total, average
-
-# 文件: test-14.py:37
-async def process_event(payload):
-    # 异步保存数据到数据库
-    await save_to_db(payload)
-
-# 文件: test-14.py:1
-# 文件: test-14.py
-
 import asyncio
 
 
@@ -89,5 +64,10 @@ async def process_event(payload, items=None, db_connection=None):
     }
 
 
+class _DummyConnection:
+    def commit(self):
+        pass
+
+
 if __name__ == "__main__":
-    asyncio.run(process_event({"event_type": "test", "is_critical": False}))
+    asyncio.run(process_event({"event_type": "test", "is_critical": False}, db_connection=_DummyConnection()))
