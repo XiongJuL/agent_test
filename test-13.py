@@ -63,4 +63,5 @@ test_payload = {
     "is_critical": False
 }
 
-asyncio.run(process_webhook_event(test_payload))
+if __name__ == '__main__':
+    asyncio.run(process_webhook_event(test_payload))
