@@ -1,47 +1,79 @@
 import asyncio
+import logging
 
 EVENT_TYPE_KEY = "event_type"
 USER_ID_KEY = "user_id"
 ITEMS_KEY = "items"
 IS_CRITICAL_KEY = "is_critical"
 
+logger = logging.getLogger(__name__)
 
-async def process_webhook_event(payload):
-    """处理 Webhook 事件并保存到数据库。"""
-    print("收到 Webhook 事件，开始处理...")
 
+def validate_payload(payload):
+    """校验 payload 必要字段，返回 (event_name, user_id) 或 None。"""
     event_name = payload.get(EVENT_TYPE_KEY)
     if event_name is None:
-        print("缺少事件类型，无法处理")
-        return False
-    print(f"事件类型: {event_name}")
+        logger.warning("缺少事件类型，无法处理")
+        return None
+    logger.info("事件类型: %s", event_name)
 
     user_id = payload.get(USER_ID_KEY)
     if user_id is None:
-        print("缺少用户ID，无法处理")
+        logger.warning("缺少用户ID，无法处理")
+        return None
+    logger.info("欢迎用户: %s", user_id)
+    return event_name, user_id
+
+
+def log_critical_alert(payload):
+    """若为严重警报则记录日志。"""
+    if payload.get(IS_CRITICAL_KEY):
+        logger.warning("⚠️ 这是一个严重警报！")
+
+
+def calculate_average(items):
+    """计算数值型 items 的平均值，无有效数据时返回 None。"""
+    if not isinstance(items, (list, tuple)):
+        logger.warning("items 字段不是可迭代列表，跳过平均值计算")
+        return None
+    numeric_items = [
+        item for item in items
+        if isinstance(item, (int, float)) and not isinstance(item, bool)
+    ]
+    if not numeric_items:
+        return None
+    return sum(numeric_items) / len(numeric_items)
+
+
+async def commit_db(db_connection):
+    """提交数据库事务。"""
+    if db_connection is None:
+        logger.warning("数据库连接不可用，跳过提交")
+        return
+    db_connection.commit()
+
+
+async def process_webhook_event(payload):
+    """处理 Webhook 事件并保存到数据库。"""
+    logger.info("收到 Webhook 事件，开始处理...")
+
+    validated = validate_payload(payload)
+    if validated is None:
         return False
-    welcome_msg = f"欢迎用户: {user_id}"
-    print(welcome_msg)
 
     await save_to_db(payload)
 
-    if payload.get(IS_CRITICAL_KEY):
-        print("⚠️ 这是一个严重警报！")
+    log_critical_alert(payload)
 
     items = payload.get(ITEMS_KEY, [])
-    numeric_items = [item for item in items if isinstance(item, (int, float)) and not isinstance(item, bool)]
-    if numeric_items:
-        total = sum(numeric_items)
-        average = total / len(numeric_items)
-        print(f"平均值: {average}")
+    average = calculate_average(items)
+    if average is None:
+        logger.info("平均值: 无数据")
     else:
-        print("平均值: 无数据")
+        logger.info("平均值: %s", average)
 
     db_connection = await get_db_connection()
-    if db_connection is not None:
-        db_connection.commit()
-    else:
-        print("数据库连接不可用，跳过提交")
+    await commit_db(db_connection)
 
     return True
 
@@ -55,7 +87,7 @@ async def get_db_connection():
 async def save_to_db(data):
     """异步保存数据到数据库。"""
     await asyncio.sleep(0.1)
-    print("数据已保存到数据库")
+    logger.info("数据已保存到数据库")
 
 
 async def main():
@@ -69,4 +101,5 @@ async def main():
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
     asyncio.run(main())
