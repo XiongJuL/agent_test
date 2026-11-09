@@ -49,8 +49,9 @@ async def commit_db(db_connection):
     """提交数据库事务。"""
     if db_connection is None:
         logger.warning("数据库连接不可用，跳过提交")
-        return
+        return False
     db_connection.commit()
+    return True
 
 
 async def process_webhook_event(payload):
@@ -61,7 +62,20 @@ async def process_webhook_event(payload):
     if validated is None:
         return False
 
-    await save_to_db(payload)
+    db_connection = await get_db_connection()
+    if db_connection is None:
+        logger.error("无法获取数据库连接，事件处理失败")
+        return False
+
+    try:
+        await save_to_db(db_connection, payload)
+        committed = await commit_db(db_connection)
+        if not committed:
+            logger.error("数据库提交失败，事件未持久化")
+            return False
+    except Exception:
+        logger.exception("保存或提交数据库时发生异常")
+        return False
 
     log_critical_alert(payload)
 
@@ -72,21 +86,30 @@ async def process_webhook_event(payload):
     else:
         logger.info("平均值: %s", average)
 
-    db_connection = await get_db_connection()
-    await commit_db(db_connection)
-
     return True
+
+
+class _InMemoryDBConnection:
+    """简单的内存数据库连接，用于演示持久化。"""
+
+    def __init__(self):
+        self.data = []
+        self.committed = False
+
+    def commit(self):
+        self.committed = True
 
 
 async def get_db_connection():
     """获取数据库连接。"""
     await asyncio.sleep(0)
-    return None
+    return _InMemoryDBConnection()
 
 
-async def save_to_db(data):
+async def save_to_db(db_connection, data):
     """异步保存数据到数据库。"""
     await asyncio.sleep(0.1)
+    db_connection.data.append(data)
     logger.info("数据已保存到数据库")
 
 
