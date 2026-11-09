@@ -9,6 +9,14 @@ logger = logging.getLogger(__name__)
 DB_PASSWORD = os.environ.get("DB_PASSWORD")
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
+PAYMENT_LOG_FILENAME = "payment_log.txt"
+MIN_PAYMENT_AMOUNT = 0
+PAYMENT_SIMULATED_DELAY_SECONDS = 1
+DEFAULT_USERNAME = "XiongJiuL"
+DEFAULT_SCORES = [85, 90, 78]
+DEFAULT_PAYMENT_USER_ID = 1001
+DEFAULT_PAYMENT_AMOUNT = 50
+
 def get_user_data(username):
     conn = sqlite3.connect("users.db")
     try:
@@ -23,18 +31,15 @@ def get_user_data(username):
 def calculate_average(scores):
     if not scores:
         return 0
-    total = 0
-    for score in scores:
-        total += score
-    return total / len(scores)
+    return sum(scores) / len(scores)
 
 def process_payment(user_id, amount):
-    print(f"Processing payment for user {user_id}...")
+    logger.info(f"Processing payment for user {user_id}...")
     try:
-        time.sleep(1)
-        if amount < 0:
+        time.sleep(PAYMENT_SIMULATED_DELAY_SECONDS)
+        if amount < MIN_PAYMENT_AMOUNT:
             raise ValueError("Amount cannot be negative")
-        log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "payment_log.txt")
+        log_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), PAYMENT_LOG_FILENAME)
         with open(log_path, "a") as f:
             f.write(f"User {user_id} paid {amount}\n")
     except ValueError as e:
@@ -48,18 +53,22 @@ def process_payment(user_id, amount):
         raise
 
 def main():
-    username = "XiongJiuL"
-    scores = [85, 90, 78]
+    username = DEFAULT_USERNAME
+    scores = DEFAULT_SCORES
 
-    print(f"Fetching data for {username}")
+    logger.info(f"Fetching data for {username}")
     user_data = get_user_data(username)
 
-    print("Calculating average...")
+    logger.info("Calculating average...")
     avg = calculate_average(scores)
 
-    print(f"Average is: {avg}")
+    logger.info(f"Average is: {avg}")
 
-    process_payment(1001, -50)
+    try:
+        process_payment(DEFAULT_PAYMENT_USER_ID, DEFAULT_PAYMENT_AMOUNT)
+    except Exception as e:
+        logger.error(f"Payment processing failed: {e}")
 
 if __name__ == "__main__":
     main()
+</final_file>
